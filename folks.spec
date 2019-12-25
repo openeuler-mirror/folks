@@ -1,7 +1,7 @@
 Name:           folks
 Epoch:          1
 Version:        0.11.4
-Release:        9
+Release:        10
 Summary:        Library aggregates people from multiple sources
 License:        LGPLv2+
 URL:            https://wiki.gnome.org/Projects/Folks
@@ -12,8 +12,8 @@ BuildRequires:  glib2-devel gobject-introspection-devel intltool vala-devel >= 0
 BuildRequires:  vala libxml2-devel GConf2-devel evolution-data-server-devel >= 3.13.90
 BuildRequires:  readline-devel pkgconfig(gee-0.8) >= 0.8.4
 
-Provides:       %{name}-tools = %{version}-%{release}
-Obsoletes:      %{name}-tools < %{version}-%{release}
+Provides:       %{name}-tools = %{epoch}:%{version}-%{release}
+Obsoletes:      %{name}-tools < %{epoch}:%{version}-%{release}
 
 %description
 libfolks is a library that aggregates people from multiple sources
@@ -94,5 +94,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 
 %changelog
+* Wed Dec 25 2019 Ling Yang <lingyang2@huawei.com> - 1:0.11.4-10
+- Add epoch for providing folks-tools
+
 * Fri Dec 21 2019 Senlin Xia <xiasenlin1@huawei.com> - 1:0.11.4-9
 - Package init
