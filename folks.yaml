@@ -1,0 +1,4 @@
+version_control: gitlab.gnome
+src_repo: folks
+tag_prefix: ^FOLKS
+seperator: _
