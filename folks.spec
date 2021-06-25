@@ -1,28 +1,48 @@
+%global folks_module_version 26
+
 Name:           folks
 Epoch:          1
-Version:        0.11.4
-Release:        10
+Version:        0.15.2
+Release:        1
 Summary:        Library aggregates people from multiple sources
 License:        LGPLv2+
 URL:            https://wiki.gnome.org/Projects/Folks
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/folks/0.11/folks-%{version}.tar.xz
+Patch0:        folks-eds-test-timeout.patch
 
 BuildRequires:  chrpath telepathy-glib-devel >= 0.19.0 telepathy-glib-vala
 BuildRequires:  glib2-devel gobject-introspection-devel intltool vala-devel >= 0.17.6
 BuildRequires:  vala libxml2-devel GConf2-devel evolution-data-server-devel >= 3.13.90
 BuildRequires:  readline-devel pkgconfig(gee-0.8) >= 0.8.4
 
-Provides:       %{name}-tools = %{epoch}:%{version}-%{release}
-Obsoletes:      %{name}-tools < %{epoch}:%{version}-%{release}
+BuildRequires:  gcc meson gettext
+BuildRequires:  pkgconfig(dbus-glib-1) evolution-data-server-devel >= 3.33.2 pkgconfig(gee-0.8) >= 0.8.4
+BuildRequires:  glib2-devel gobject-introspection-devel libxml2-devel
+BuildRequires:  python3-dbusmock python3-devel readline-devel
+BuildRequires:  telepathy-glib-devel telepathy-glib-vala vala
 
 %description
 libfolks is a library that aggregates people from multiple sources
 (eg, Telepathy connection managers) to create metacontacts.
 
+%package        telepathy
+Summary:        Folks telepathy backend
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description    telepathy
+%{name}-telepathy contains the folks telepathy backend.
+
+%package        tools
+Summary:        Tools for %{name}
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description    tools
+%{name}-tools contains a database and import tool.
+
 %package        devel
 Summary:        Development files for folks
-Requires:       folks = %{epoch}:%{version}-%{release}
-Requires:       folks-tools = %{epoch}:%{version}-%{release}
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-tools = %{epoch}:%{version}-%{release}
 
 %description    devel
 This package contains libraries and header files.
@@ -33,55 +53,48 @@ This package contains libraries and header files.
 
 
 %build
-%configure --disable-fatal-warnings --enable-eds-backend \
-  --enable-bluez-backend --disable-zeitgeist --enable-vala \
-  --enable-inspect-tool --disable-libsocialweb-backend
-%make_build V=1
+%define _lto_cflags %{nil}
 
+%meson
+%meson_build
 
 %install
-%make_install
-%delete_la
-for fpath in $RPM_BUILD_ROOT%{_libdir}/libfolks-dummy.so \
-            $RPM_BUILD_ROOT%{_libdir}/libfolks-eds.so \
-            $RPM_BUILD_ROOT%{_libdir}/libfolks-telepathy.so
-do
-    chrpath --delete ${fpath}
-done
-find %{buildroot}%{_libdir}/folks/43/backends -name '*.so' -exec chrpath --delete {} \;
-find %{buildroot}%{_bindir} -name 'folks-*' -exec chrpath --delete {} \;
+%meson_install
 
-
-%find_lang folks
+%find_lang %{name}
 
 %check
-VERBOSE=1 make check
-
-
-%post
-/sbin/ldconfig
-
-
-%postun
-/sbin/ldconfig
-if [ $1 -eq 0 ]; then
-  glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-fi
-
-%posttrans
-glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+%meson_test
 
 
 %files -f folks.lang
 %license COPYING
-%doc AUTHORS README NEWS
-%{_libdir}/*.so.*
-%{_libdir}/folks
-%{_libdir}/girepository-1.0/Folks*.typelib
+%doc AUTHORS NEWS
+%{_libdir}/libfolks-dummy.so.26*
+%{_libdir}/libfolks-eds.so.26*
+%{_libdir}/libfolks.so.26*
+%dir %{_libdir}/folks
+%dir %{_libdir}/folks/%{folks_module_version}
+%dir %{_libdir}/folks/%{folks_module_version}/backends
+%{_libdir}/folks/%{folks_module_version}/backends/bluez/
+%{_libdir}/folks/%{folks_module_version}/backends/dummy/
+%{_libdir}/folks/%{folks_module_version}/backends/eds/
+%{_libdir}/folks/%{folks_module_version}/backends/key-file/
+%{_libdir}/folks/%{folks_module_version}/backends/ofono/
+%{_libdir}/girepository-1.0/Folks-0.7.typelib
+%{_libdir}/girepository-1.0/FolksDummy-0.7.typelib
+%{_libdir}/girepository-1.0/FolksEds-0.7.typelib
 %{_datadir}/GConf/gsettings/folks.convert
 %{_datadir}/glib-2.0/schemas/org.freedesktop.folks.gschema.xml
-%{_bindir}/folks-import
-%{_bindir}/folks-inspect
+
+%files telepathy
+%{_libdir}/libfolks-telepathy.so.26*
+%{_libdir}/folks/%{folks_module_version}/backends/telepathy
+%{_libdir}/girepository-1.0/FolksTelepathy-0.7.typelib
+
+%files tools
+%{_bindir}/%{name}-import
+%{_bindir}/%{name}-inspect
 
 %files devel
 %{_includedir}/folks
@@ -94,8 +107,11 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 
 %changelog
+* Fri Jun 25 2021 Wenlong Ding <wenlong.ding@turbolinux.com.cn> - 1:0.15.2-1
+- Update to 1:0.15.2
+
 * Wed Dec 25 2019 Ling Yang <lingyang2@huawei.com> - 1:0.11.4-10
 - Add epoch for providing folks-tools
 
-* Fri Dec 21 2019 Senlin Xia <xiasenlin1@huawei.com> - 1:0.11.4-9
+* Sat Dec 21 2019 Senlin Xia <xiasenlin1@huawei.com> - 1:0.11.4-9
 - Package init
