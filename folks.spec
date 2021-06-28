@@ -3,18 +3,15 @@
 Name:           folks
 Epoch:          1
 Version:        0.15.2
-Release:        1
+Release:        2
 Summary:        Library aggregates people from multiple sources
 License:        LGPLv2+
 URL:            https://wiki.gnome.org/Projects/Folks
-Source0:        http://ftp.gnome.org/pub/GNOME/sources/folks/0.11/folks-%{version}.tar.xz
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/folks/0.15/folks-%{version}.tar.xz
 Patch0:        folks-eds-test-timeout.patch
 
-BuildRequires:  chrpath telepathy-glib-devel >= 0.19.0 telepathy-glib-vala
-BuildRequires:  glib2-devel gobject-introspection-devel intltool vala-devel >= 0.17.6
-BuildRequires:  vala libxml2-devel GConf2-devel evolution-data-server-devel >= 3.13.90
-BuildRequires:  readline-devel pkgconfig(gee-0.8) >= 0.8.4
-
+BuildRequires:  intltool vala-devel >= 0.17.6
+BuildRequires:  libxml2-devel GConf2-devel
 BuildRequires:  gcc meson gettext
 BuildRequires:  pkgconfig(dbus-glib-1) evolution-data-server-devel >= 3.33.2 pkgconfig(gee-0.8) >= 0.8.4
 BuildRequires:  glib2-devel gobject-introspection-devel libxml2-devel
@@ -107,6 +104,9 @@ This package contains libraries and header files.
 
 
 %changelog
+* Mon Jun 28 2021 weijin deng <weijin.deng@turbolinux.com.cn> - 3.38.3-1
+- Get rid of repeated build dependency that may cause fault
+
 * Fri Jun 25 2021 Wenlong Ding <wenlong.ding@turbolinux.com.cn> - 1:0.15.2-1
 - Update to 1:0.15.2
 
