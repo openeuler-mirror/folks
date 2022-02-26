@@ -3,7 +3,7 @@
 Name:           folks
 Epoch:          1
 Version:        0.15.2
-Release:        2
+Release:        3
 Summary:        Library aggregates people from multiple sources
 License:        LGPLv2+
 URL:            https://wiki.gnome.org/Projects/Folks
@@ -61,8 +61,11 @@ This package contains libraries and header files.
 %find_lang %{name}
 
 %check
+%ifarch riscv64
+%meson_test --timeout-multiplier=10
+%else
 %meson_test
-
+%endif
 
 %files -f folks.lang
 %license COPYING
@@ -104,6 +107,9 @@ This package contains libraries and header files.
 
 
 %changelog
+* Sun Feb 27 2022 YukariChiba <i@0x7f.cc> - 3.38.3-2
+- Expand timeout value for RISC-V in tests
+
 * Mon Jun 28 2021 weijin deng <weijin.deng@turbolinux.com.cn> - 3.38.3-1
 - Get rid of repeated build dependency that may cause fault
 
