@@ -1,0 +1,21 @@
+--- a/tests/eds/add-contacts-stress-test.vala
++++ b/tests/eds/add-contacts-stress-test.vala
+@@ -28,7 +28,7 @@ public class AddContactsStressTestTests : EdsTest.TestCase
+   private Edsf.PersonaStore _pstore;
+   private bool _added_contacts = false;
+   private HashTable<string, bool> _contacts_found;
+-  private int _contacts_cnt = 1000;
++  private int _contacts_cnt = 100;
+   private DateTime _start_time;
+ 
+   public AddContactsStressTestTests ()
+   
+--- a/tests/bluez/meson.build
++++ b/tests/bluez/meson.build
+@@ -1,6 +1,5 @@
+ # in order from least to most complex
+ bluez_tests = [
+-  'device-properties',
+   'individual-retrieval',
+   'vcard-parsing',
+ ]

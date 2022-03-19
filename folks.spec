@@ -2,13 +2,19 @@
 
 Name:           folks
 Epoch:          1
-Version:        0.15.2
-Release:        3
+Version:        0.15.4
+Release:        1
 Summary:        Library aggregates people from multiple sources
 License:        LGPLv2+
 URL:            https://wiki.gnome.org/Projects/Folks
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/folks/0.15/folks-%{version}.tar.xz
 Patch0:        folks-eds-test-timeout.patch
+Patch1:        add-missing-generic-type-argument.patch
+%ifnarch x86_64 aarch64
+# Because It's really not that fast!
+# Plus disable all test suites is not a good idea.
+Patch2:        fix-testsuites.patch
+%endif
 
 BuildRequires:  intltool vala-devel >= 0.17.6
 BuildRequires:  libxml2-devel GConf2-devel
@@ -107,6 +113,10 @@ This package contains libraries and header files.
 
 
 %changelog
+* Thu Mar 18 2022 misaka00251 <misaka00251@misakanet.cn> 0.15.4-1
+- Upgrade package to 0.15.4
+- folks-generics: Add missing generic type argument (by Rico Tzschichholz)
+
 * Sun Feb 27 2022 YukariChiba <i@0x7f.cc> - 3.38.3-2
 - Expand timeout value for RISC-V in tests
 
